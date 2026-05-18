@@ -127,21 +127,6 @@ CREATE TABLE submissions (
     FOREIGN KEY (graded_by)     REFERENCES users(user_id)
 );
 
-CREATE INDEX idx_enrollments_course ON course_enrollments(course_id);
-CREATE INDEX idx_enrollments_student ON course_enrollments(student_id);
-
-CREATE INDEX idx_courses_lecturer ON courses(lecturer_id);
-
-CREATE INDEX idx_events_course ON calendar_events(course_id);
-
-CREATE INDEX idx_forums_course ON forums(course_id);
-
-CREATE INDEX idx_threads_forum ON threads(forum_id);
-
-CREATE INDEX idx_assignments_course ON assignments(course_id);
-
-CREATE INDEX idx_submissions_student ON submissions(student_id);
-
 -- Views
 CREATE VIEW vw_large_courses AS
 SELECT c.course_id, c.course_name, COUNT(e.student_id) AS student_count

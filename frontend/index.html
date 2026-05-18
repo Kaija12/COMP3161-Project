@@ -1,35 +1,1794 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Dashboard</title>
-<link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CourseFlow — Course Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c23;
+    --surface3: #1e2330;
+    --border: #252b38;
+    --border2: #2e3548;
+    --accent: #4f8ef7;
+    --accent2: #7b6ef6;
+    --accent3: #40c9a2;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e8ecf4;
+    --text2: #8b93a8;
+    --text3: #5a6178;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --glow: 0 0 40px rgba(79,142,247,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ── AUTH SCREEN ── */
+  #auth-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    position: relative;
+  }
+  #auth-screen::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 20%, rgba(79,142,247,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(123,110,246,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow), var(--glow);
+    animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .auth-logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .auth-logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .auth-logo-text span { color: var(--accent); }
+  .auth-tabs {
+    display: flex;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    margin-bottom: 32px;
+  }
+  .auth-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: none;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .auth-tab.active {
+    background: var(--surface3);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .form-input, .form-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+  }
+  .form-select option { background: var(--surface2); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #3d7ae5; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,142,247,0.4); }
+  .btn-secondary {
+    background: var(--surface3);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-ghost {
+    background: none;
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+  .btn-sm { padding: 8px 14px; font-size: 13px; }
+  .btn-full { width: 100%; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+  /* ── TOAST ── */
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 280px;
+    animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow);
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .toast-success { background: #065f46; border: 1px solid #059669; color: #a7f3d0; }
+  .toast-error { background: #7f1d1d; border: 1px solid #dc2626; color: #fca5a5; }
+  .toast-info { background: #1e3a5f; border: 1px solid var(--accent); color: #93c5fd; }
+
+  /* ── APP SHELL ── */
+  #app-screen { display: none; min-height: 100vh; }
+  .shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 64px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+    margin-right: 8px;
+  }
+  .topbar-logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .topbar-logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .topbar-logo-text span { color: var(--accent); }
+  .topbar-spacer { flex: 1; }
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+  }
+  .user-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .avatar-admin { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+  .avatar-lecturer { background: linear-gradient(135deg, var(--accent2), var(--accent)); }
+  .avatar-student { background: linear-gradient(135deg, var(--accent3), var(--accent)); }
+  .user-badge-info { line-height: 1.2; }
+  .user-badge-name { font-size: 13px; font-weight: 500; }
+  .user-badge-role { font-size: 11px; color: var(--text3); text-transform: capitalize; }
+  .role-chip {
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .role-admin { background: rgba(245,158,11,0.2); color: var(--warn); }
+  .role-lecturer { background: rgba(123,110,246,0.2); color: var(--accent2); }
+  .role-student { background: rgba(64,201,162,0.2); color: var(--accent3); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+    overflow-y: auto;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+  }
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 12px;
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  .nav-section-label:first-child { margin-top: 0; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+    font-weight: 400;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(79,142,247,0.15); color: var(--accent); font-weight: 500; }
+  .nav-item-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-logout {
+    margin-top: auto;
+    color: var(--danger) !important;
+  }
+  .nav-logout:hover { background: rgba(239,68,68,0.1) !important; }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    padding: 32px;
+    overflow-y: auto;
+    height: calc(100vh - 64px);
+    background: var(--bg);
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .page-subtitle { font-size: 14px; color: var(--text2); margin-top: 4px; }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, var(--stat-color, rgba(79,142,247,0.2)) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(20px, -20px);
+  }
+  .stat-label { font-size: 12px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── COURSE GRID ── */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .course-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .course-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .course-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .course-card:hover::before { transform: scaleX(1); }
+  .course-card-code { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .course-card-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; line-height: 1.3; }
+  .course-card-desc { font-size: 13px; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .course-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .course-card-lecturer { font-size: 12px; color: var(--text3); }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .badge-blue { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .badge-green { background: rgba(64,201,162,0.15); color: var(--accent3); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--warn); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .badge-purple { background: rgba(123,110,246,0.15); color: var(--accent2); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  }
+  .modal-wide { max-width: 700px; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+  .modal-close {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: var(--surface2);
+    border-radius: 6px; cursor: pointer; color: var(--text2);
+    transition: all 0.15s; font-size: 16px;
+  }
+  .modal-close:hover { background: var(--surface3); color: var(--text); }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--text3);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-title { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text2); margin-bottom: 8px; }
+  .empty-sub { font-size: 14px; }
+
+  /* ── LOADING ── */
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-center { display: flex; align-items: center; justify-content: center; padding: 64px; color: var(--text2); gap: 12px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 2px; background: var(--surface2); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 24px; flex-wrap: wrap; }
+  .tab { padding: 8px 16px; border: none; background: none; color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .tab.active { background: var(--surface3); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; font-size: 13px; color: var(--text3); flex-wrap: wrap; }
+  .breadcrumb-link { color: var(--accent); cursor: pointer; background: none; border: none; font-family: inherit; font-size: inherit; padding: 0; }
+  .breadcrumb-link:hover { text-decoration: underline; }
+  .breadcrumb-sep { color: var(--text3); }
+
+  /* ── FORUM ── */
+  .thread-item { padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .thread-item:last-child { border-bottom: none; }
+  .thread-title { font-weight: 500; color: var(--text); cursor: pointer; transition: color 0.15s; margin-bottom: 6px; }
+  .thread-title:hover { color: var(--accent); }
+  .thread-meta { font-size: 12px; color: var(--text3); display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .reply-item { padding: 14px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; }
+  .reply-nested { margin-left: 24px; border-left: 2px solid var(--border2); padding-left: 16px; margin-top: 8px; }
+  .reply-author { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+  .reply-body { font-size: 14px; color: var(--text2); line-height: 1.5; }
+  .reply-date { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .reply-btn { font-size: 12px; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; margin-top: 4px; }
+  .reply-btn:hover { text-decoration: underline; }
+
+  /* ── ASSIGNMENT CARD ── */
+  .assignment-item { padding: 18px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .assignment-item:last-child { border-bottom: none; }
+  .assignment-name { font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .assignment-meta { font-size: 12px; color: var(--text3); }
+  .grade-display { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+
+  /* ── CONTENT SECTION ── */
+  .content-section { margin-bottom: 24px; }
+  .content-section-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; }
+  .content-section-title { font-weight: 600; color: var(--text); font-size: 14px; }
+  .content-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 4px; transition: border-color 0.15s; }
+  .content-item:hover { border-color: var(--border2); }
+  .content-type-icon { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .icon-link { background: rgba(79,142,247,0.15); }
+  .icon-file { background: rgba(64,201,162,0.15); }
+  .icon-slide { background: rgba(245,158,11,0.15); }
+  .content-item-title { font-size: 14px; color: var(--text2); flex: 1; }
+  .content-item-link { font-size: 12px; color: var(--accent); text-decoration: none; }
+  .content-item-link:hover { text-decoration: underline; }
+
+  /* ── EVENTS ── */
+  .event-item { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .event-item:last-child { border-bottom: none; }
+  .event-date-box { min-width: 50px; text-align: center; background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.2); border-radius: 8px; padding: 8px; }
+  .event-month { font-size: 10px; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .event-day { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+  .event-info-title { font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .event-info-meta { font-size: 12px; color: var(--text3); }
+
+  /* ── REPORT TABLE ── */
+  .rank-num { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text3); }
+  .rank-num.top3 { color: var(--warn); }
+
+  /* ── GRID HELPERS ── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .text-muted { color: var(--text2); }
+  .text-sm { font-size: 13px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s; }
+
+  /* ── PAGE TRANSITIONS ── */
+  .page { animation: fadeSlide 0.25s ease; }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 768px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 16px; }
+    .form-row { grid-template-columns: 1fr; }
+    .courses-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-<nav class="navbar">
-  <h2>CourseSys</h2>
-  <div>
-    <a href="courses.html">Courses</a>
-    <a href="events.html">Events</a>
-    <a href="forums.html">Forums</a>
-    <a href="assignments.html">Assignments</a>
-    <a href="reports.html">Reports</a>
-    <button onclick="logout()">Logout</button>
-  </div>
-</nav>
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🎓</div>
+      <div class="auth-logo-text">Course<span>Flow</span></div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+    </div>
 
-<div class="container">
-  <h1>Dashboard</h1>
+    <!-- Login Form -->
+    <div id="form-login">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="login-username" type="text" placeholder="Enter your username" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="login-password" type="password" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="handleLogin()" id="btn-login">
+        Sign In
+      </button>
+    </div>
 
-  <div class="grid">
-    <div class="card" onclick="go('courses.html')">Manage Courses</div>
-    <div class="card" onclick="go('events.html')">Calendar Events</div>
-    <div class="card" onclick="go('forums.html')">Forums</div>
-    <div class="card" onclick="go('assignments.html')">Assignments</div>
-    <div class="card" onclick="go('reports.html')">Reports</div>
+    <!-- Register Form -->
+    <div id="form-register" style="display:none">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" id="reg-first" type="text" placeholder="First name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" id="reg-last" type="text" placeholder="Last name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="reg-username" type="text" placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="reg-password" type="password" placeholder="Create a password">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-select" id="reg-role">
+          <option value="student">Student</option>
+          <option value="lecturer">Lecturer</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="handleRegister()" id="btn-register">
+        Create Account
+      </button>
+    </div>
   </div>
 </div>
 
-<script src="app.js"></script>
+<!-- APP SCREEN -->
+<div id="app-screen">
+  <div class="shell">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <a class="topbar-logo" href="#">
+        <div class="topbar-logo-icon">🎓</div>
+        <div class="topbar-logo-text">Course<span>Flow</span></div>
+      </a>
+      <div class="topbar-spacer"></div>
+      <div class="user-badge">
+        <div class="user-avatar" id="user-avatar-top"></div>
+        <div class="user-badge-info">
+          <div class="user-badge-name" id="user-name-top"></div>
+          <div class="user-badge-role" id="user-role-top"></div>
+        </div>
+        <span class="role-chip" id="user-role-chip"></span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Sign Out</button>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="nav-section-label">Main</div>
+      <button class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
+        <span class="nav-item-icon">⬛</span> Dashboard
+      </button>
+      <button class="nav-item" id="nav-courses" onclick="navigate('courses')">
+        <span class="nav-item-icon">📚</span> Courses
+      </button>
+      <button class="nav-item" id="nav-events" onclick="navigate('events')">
+        <span class="nav-item-icon">📅</span> My Calendar
+      </button>
+
+      <div class="nav-section-label" id="nav-section-admin" style="display:none">Admin</div>
+      <button class="nav-item" id="nav-reports" style="display:none" onclick="navigate('reports')">
+        <span class="nav-item-icon">📊</span> Reports
+      </button>
+      <button class="nav-item" id="nav-create-course" style="display:none" onclick="showCreateCourseModal()">
+        <span class="nav-item-icon">➕</span> Create Course
+      </button>
+
+      <div style="flex:1"></div>
+      <button class="nav-item nav-logout" onclick="handleLogout()" style="margin-top:20px">
+        <span class="nav-item-icon">🚪</span> Sign Out
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main" id="main-content">
+      <div id="page-dashboard" class="page"></div>
+      <div id="page-courses" class="page" style="display:none"></div>
+      <div id="page-events" class="page" style="display:none"></div>
+      <div id="page-reports" class="page" style="display:none"></div>
+      <div id="page-course-detail" class="page" style="display:none"></div>
+    </main>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Modals Container -->
+<div id="modals"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const API = window.API_BASE || 'http://localhost:3000/api';
+let currentUser = null;
+let token = null;
+let currentPage = 'dashboard';
+let currentCourse = null;
+let currentForum = null;
+let currentThread = null;
+
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
+function apiCall(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (token) opts.headers['Authorization'] = `Bearer ${token}`;
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(API + path, opts).then(r => r.json());
+}
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function fmtDateTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function initials(u) {
+  if (!u) return '?';
+  const parts = (u.first_name || u.username || '?').split(' ');
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+
+function showModal(html) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = html;
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('modals').appendChild(overlay);
+  return overlay;
+}
+function closeModal() {
+  document.querySelector('.modal-overlay')?.remove();
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('form-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? '' : 'none';
+}
+
+async function handleLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!username || !password) return toast('Fill in all fields.', 'error');
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Signing in…';
+  const res = await apiCall('POST', '/auth/login', { username, password });
+  btn.disabled = false; btn.textContent = 'Sign In';
+  if (res.token) {
+    token = res.token;
+    currentUser = res.user;
+    initApp();
+  } else {
+    toast(res.error || 'Login failed.', 'error');
+  }
+}
+
+async function handleRegister() {
+  const body = {
+    username: document.getElementById('reg-username').value.trim(),
+    password: document.getElementById('reg-password').value,
+    role: document.getElementById('reg-role').value,
+    first_name: document.getElementById('reg-first').value.trim(),
+    last_name: document.getElementById('reg-last').value.trim(),
+    email: document.getElementById('reg-email').value.trim(),
+  };
+  if (!body.username || !body.password) return toast('Username and password required.', 'error');
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  const res = await apiCall('POST', '/auth/register', body);
+  btn.disabled = false; btn.textContent = 'Create Account';
+  if (res.user_id) {
+    toast('Account created! Please sign in.', 'success');
+    switchAuthTab('login');
+    document.getElementById('login-username').value = body.username;
+  } else {
+    toast(res.error || 'Registration failed.', 'error');
+  }
+}
+
+function handleLogout() {
+  token = null; currentUser = null;
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════
+// INIT APP
+// ═══════════════════════════════════════════
+function initApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+
+  const role = currentUser.role;
+  const name = [currentUser.first_name, currentUser.last_name].filter(Boolean).join(' ') || currentUser.username;
+
+  document.getElementById('user-name-top').textContent = name;
+  document.getElementById('user-role-top').textContent = role;
+  document.getElementById('user-avatar-top').textContent = initials(currentUser);
+  document.getElementById('user-avatar-top').className = `user-avatar avatar-${role}`;
+
+  const chip = document.getElementById('user-role-chip');
+  chip.textContent = role;
+  chip.className = `role-chip role-${role}`;
+
+  if (role === 'admin') {
+    document.getElementById('nav-section-admin').style.display = '';
+    document.getElementById('nav-reports').style.display = '';
+    document.getElementById('nav-create-course').style.display = '';
+  }
+  if (role === 'lecturer') {
+    document.getElementById('nav-section-admin').style.display = '';
+    document.getElementById('nav-reports').style.display = '';
+  }
+
+  navigate('dashboard');
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function navigate(page) {
+  ['dashboard','courses','events','reports','course-detail'].forEach(p => {
+    document.getElementById(`page-${p}`).style.display = p === page ? '' : 'none';
+  });
+  ['dashboard','courses','events','reports'].forEach(p => {
+    document.getElementById(`nav-${p}`)?.classList.toggle('active', p === page);
+  });
+  currentPage = page;
+  const pages = { dashboard: renderDashboard, courses: renderCourses, events: renderEvents, reports: renderReports };
+  if (pages[page]) pages[page]();
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+async function renderDashboard() {
+  const el = document.getElementById('page-dashboard');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span> Loading…</div>';
+
+  const role = currentUser.role;
+  let html = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Welcome back 👋</div>
+        <div class="page-subtitle">${[currentUser.first_name, currentUser.last_name].filter(Boolean).join(' ') || currentUser.username} · ${role}</div>
+      </div>
+    </div>
+  `;
+
+  const allCourses = await apiCall('GET', '/courses');
+  const courses = allCourses.courses || [];
+
+  if (role === 'student') {
+    const myCourses = await apiCall('GET', `/courses/student/${currentUser.user_id}`);
+    const mc = myCourses.courses || [];
+    html += `
+      <div class="stats-grid">
+        <div class="stat-card" style="--stat-color:rgba(79,142,247,0.2)">
+          <div class="stat-label">Enrolled Courses</div>
+          <div class="stat-value">${mc.length}</div>
+          <div class="stat-sub">of 6 max</div>
+        </div>
+        <div class="stat-card" style="--stat-color:rgba(64,201,162,0.2)">
+          <div class="stat-label">Available Courses</div>
+          <div class="stat-value">${courses.length}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📚 My Enrolled Courses</div>
+        ${mc.length === 0 ? '<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">Not enrolled yet</div><div class="empty-sub">Browse and enroll in courses</div></div>' :
+          `<div class="courses-grid">${mc.map(c => courseCardHTML(c, true)).join('')}</div>`}
+      </div>`;
+  } else if (role === 'lecturer') {
+    const lCourses = await apiCall('GET', `/courses/lecturer/${currentUser.user_id}`);
+    const lc = lCourses.courses || [];
+    html += `
+      <div class="stats-grid">
+        <div class="stat-card" style="--stat-color:rgba(123,110,246,0.2)">
+          <div class="stat-label">My Courses</div>
+          <div class="stat-value">${lc.length}</div>
+          <div class="stat-sub">of 5 max</div>
+        </div>
+        <div class="stat-card" style="--stat-color:rgba(79,142,247,0.2)">
+          <div class="stat-label">Total Platform Courses</div>
+          <div class="stat-value">${courses.length}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎓 Courses I Teach</div>
+        ${lc.length === 0 ? '<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No courses assigned yet</div></div>' :
+          `<div class="courses-grid">${lc.map(c => courseCardHTML(c, true)).join('')}</div>`}
+      </div>`;
+  } else {
+    html += `
+      <div class="stats-grid">
+        <div class="stat-card" style="--stat-color:rgba(245,158,11,0.2)">
+          <div class="stat-label">Total Courses</div>
+          <div class="stat-value">${courses.length}</div>
+        </div>
+        <div class="stat-card" style="--stat-color:rgba(79,142,247,0.2)">
+          <div class="stat-label">Platform</div>
+          <div class="stat-value">Admin</div>
+          <div class="stat-sub">Full access</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📚 All Courses <span class="badge badge-blue" style="font-size:12px;margin-left:8px">${courses.length}</span></div>
+        <div class="courses-grid">${courses.slice(0,6).map(c => courseCardHTML(c, true)).join('')}</div>
+        ${courses.length > 6 ? `<div style="margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="navigate('courses')">View all ${courses.length} courses →</button></div>` : ''}
+      </div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function courseCardHTML(c, clickable = true) {
+  const lname = [c.lecturer_first, c.lecturer_last].filter(Boolean).join(' ') || 'Unassigned';
+  return `
+    <div class="course-card" ${clickable ? `onclick="openCourse(${c.course_id})"` : ''}>
+      <div class="course-card-code">${c.course_code || ''}</div>
+      <div class="course-card-name">${c.course_name}</div>
+      <div class="course-card-desc">${c.description || 'No description provided.'}</div>
+      <div class="course-card-footer">
+        <div class="course-card-lecturer">👤 ${lname}</div>
+        <span class="badge badge-blue" style="font-size:11px">View →</span>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// COURSES LIST
+// ═══════════════════════════════════════════
+async function renderCourses() {
+  const el = document.getElementById('page-courses');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', '/courses');
+  const courses = res.courses || [];
+  el.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">All Courses</div>
+        <div class="page-subtitle">${courses.length} courses available</div>
+      </div>
+      ${currentUser.role === 'admin' ? `<button class="btn btn-primary" onclick="showCreateCourseModal()">+ New Course</button>` : ''}
+    </div>
+    <div class="courses-grid">${courses.map(c => courseCardHTML(c)).join('')}</div>
+    ${courses.length === 0 ? '<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No courses yet</div></div>' : ''}
+  `;
+}
+
+// ═══════════════════════════════════════════
+// COURSE DETAIL
+// ═══════════════════════════════════════════
+async function openCourse(courseId) {
+  currentCourse = null;
+  const pages = ['dashboard','courses','events','reports'];
+  pages.forEach(p => document.getElementById(`page-${p}`).style.display = 'none');
+  document.getElementById('page-course-detail').style.display = '';
+  const el = document.getElementById('page-course-detail');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+
+  const res = await apiCall('GET', `/courses/${courseId}`);
+  currentCourse = res.course;
+  if (!currentCourse) { el.innerHTML = '<div class="empty">Course not found.</div>'; return; }
+
+  renderCourseDetail('overview');
+}
+
+function renderCourseDetail(tab) {
+  const c = currentCourse;
+  const lname = [c.lecturer_first, c.lecturer_last].filter(Boolean).join(' ') || 'Unassigned';
+  const role = currentUser.role;
+
+  const tabs = ['overview', 'content', 'assignments', 'forums', 'events', 'members'];
+  const tabsHTML = tabs.map(t => `<button class="tab ${t===tab?'active':''}" onclick="renderCourseDetail('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('');
+
+  let enrollBtn = '';
+  if (role === 'student') {
+    enrollBtn = `<button class="btn btn-primary btn-sm" onclick="enrollCourse(${c.course_id})">Enroll</button>`;
+  }
+
+  const el = document.getElementById('page-course-detail');
+  el.innerHTML = `
+    <div class="breadcrumb">
+      <button class="breadcrumb-link" onclick="navigate('courses')">Courses</button>
+      <span class="breadcrumb-sep">›</span>
+      <span>${c.course_name}</span>
+    </div>
+    <div class="page-header">
+      <div>
+        <div style="font-size:12px;color:var(--accent);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px">${c.course_code}</div>
+        <div class="page-title">${c.course_name}</div>
+        <div class="page-subtitle">👤 ${lname} ${c.lecturer_email ? '· ' + c.lecturer_email : ''}</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${enrollBtn}
+        ${role === 'admin' ? `<button class="btn btn-secondary btn-sm" onclick="showAssignLecturerModal(${c.course_id})">Assign Lecturer</button>` : ''}
+      </div>
+    </div>
+    <div class="tabs">${tabsHTML}</div>
+    <div id="course-tab-content"></div>
+  `;
+
+  const handlers = { overview: loadCourseOverview, content: loadCourseContent, assignments: loadCourseAssignments, forums: loadCourseForums, events: loadCourseEvents, members: loadCourseMembers };
+  if (handlers[tab]) handlers[tab](c.course_id);
+}
+
+async function loadCourseOverview(cid) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">📋 About this Course</div>
+      <p style="color:var(--text2);line-height:1.7">${currentCourse.description || 'No description provided.'}</p>
+    </div>
+  `;
+}
+
+async function loadCourseContent(cid) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/courses/${cid}/content`);
+  const sections = res.sections || [];
+  const role = currentUser.role;
+  let html = '';
+
+  if (role !== 'student') {
+    html += `
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="showAddSectionModal(${cid})">+ Add Section</button>
+      </div>`;
+  }
+
+  if (sections.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">No content yet</div></div>';
+  } else {
+    sections.forEach(s => {
+      html += `<div class="content-section">
+        <div class="content-section-header">
+          <div class="content-section-title">📁 ${s.title}</div>
+          ${role !== 'student' ? `<button class="btn btn-ghost btn-sm" onclick="showAddContentModal(${cid}, ${s.section_id})">+ Add Item</button>` : ''}
+        </div>`;
+      if (s.content.length === 0) {
+        html += '<div style="color:var(--text3);font-size:13px;padding:10px 16px">No items in this section yet.</div>';
+      } else {
+        s.content.forEach(item => {
+          const icons = { link: '🔗', file: '📄', slide: '🖼️' };
+          const iconClass = `icon-${item.content_type}`;
+          html += `
+            <div class="content-item">
+              <div class="content-type-icon ${iconClass}">${icons[item.content_type] || '📄'}</div>
+              <div class="content-item-title">${item.title}</div>
+              <a class="content-item-link" href="${item.content_url}" target="_blank">Open →</a>
+              <span class="badge badge-blue" style="font-size:11px">${item.content_type}</span>
+            </div>`;
+        });
+      }
+      html += '</div>';
+    });
+  }
+  el.innerHTML = html;
+}
+
+async function loadCourseAssignments(cid) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/courses/${cid}/assignments`);
+  const assignments = res.assignments || [];
+  const role = currentUser.role;
+
+  let html = '';
+  if (role !== 'student') {
+    html += `<div style="margin-bottom:20px"><button class="btn btn-primary btn-sm" onclick="showCreateAssignmentModal(${cid})">+ New Assignment</button></div>`;
+  }
+
+  if (assignments.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No assignments yet</div></div>';
+  } else {
+    html += '<div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Due Date</th><th>Max Grade</th><th>Actions</th></tr></thead><tbody>';
+    assignments.forEach(a => {
+      const due = a.due_date ? fmtDate(a.due_date) : '—';
+      let actions = '';
+      if (role === 'student') {
+        actions = `<button class="btn btn-primary btn-sm" onclick="showSubmitModal(${a.assignment_id})">Submit</button>`;
+      } else {
+        actions = `<button class="btn btn-ghost btn-sm" onclick="showSubmissionsModal(${cid}, ${a.assignment_id}, '${a.title.replace(/'/g,'\\\'')}')" >Submissions</button>`;
+      }
+      html += `<tr><td><span style="color:var(--text);font-weight:500">${a.title}</span>${a.description ? `<div style="font-size:12px;color:var(--text3);margin-top:2px">${a.description}</div>` : ''}</td><td><span class="badge ${a.due_date && new Date(a.due_date)<new Date() ? 'badge-red' : 'badge-green'}">${due}</span></td><td>${a.max_grade}</td><td>${actions}</td></tr>`;
+    });
+    html += '</tbody></table></div></div>';
+  }
+  el.innerHTML = html;
+}
+
+async function loadCourseForums(cid) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/courses/${cid}/forums`);
+  const forums = res.forums || [];
+  const role = currentUser.role;
+
+  let html = '';
+  if (role !== 'student') {
+    html += `<div style="margin-bottom:20px"><button class="btn btn-primary btn-sm" onclick="showCreateForumModal(${cid})">+ New Forum</button></div>`;
+  }
+
+  if (forums.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">💬</div><div class="empty-title">No forums yet</div></div>';
+  } else {
+    html += '<div class="card">';
+    forums.forEach(f => {
+      html += `<div class="thread-item" onclick="openForum(${cid}, ${f.forum_id}, '${f.title.replace(/'/g,'\\\'')}')" style="cursor:pointer">
+        <div class="thread-title">💬 ${f.title}</div>
+        <div class="thread-meta">
+          <span>${f.description || 'No description'}</span>
+          <span>🧵 ${f.thread_count} threads</span>
+          <span>by ${f.created_by_username || 'unknown'}</span>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+async function openForum(cid, forumId, forumTitle) {
+  currentForum = { id: forumId, title: forumTitle };
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+
+  const res = await apiCall('GET', `/courses/${cid}/forums/${forumId}/threads`);
+  const threads = res.threads || [];
+
+  let html = `
+    <div class="breadcrumb" style="margin-bottom:16px">
+      <button class="breadcrumb-link" onclick="renderCourseDetail('forums')">Forums</button>
+      <span class="breadcrumb-sep">›</span>
+      <span>${forumTitle}</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700">${forumTitle}</div>
+      <button class="btn btn-primary btn-sm" onclick="showNewThreadModal(${cid}, ${forumId})">+ New Thread</button>
+    </div>`;
+
+  if (threads.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">🧵</div><div class="empty-title">No threads yet</div><div class="empty-sub">Start the conversation</div></div>';
+  } else {
+    html += '<div class="card">';
+    threads.forEach(t => {
+      html += `<div class="thread-item">
+        <div class="thread-title" onclick="openThread(${cid}, ${forumId}, ${t.thread_id})">${t.title}</div>
+        <div class="thread-meta">
+          <span>by ${t.author}</span>
+          <span>💬 ${t.reply_count} replies</span>
+          <span>${fmtDate(t.created_at)}</span>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+async function openThread(cid, forumId, threadId) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/courses/${cid}/forums/${forumId}/threads/${threadId}`);
+  const { thread, replies } = res;
+  if (!thread) { el.innerHTML = '<div class="empty">Thread not found.</div>'; return; }
+
+  function replyHTML(r, depth = 0) {
+    return `<div class="${depth > 0 ? 'reply-nested' : ''}">
+      <div class="reply-item">
+        <div class="reply-author">${r.author}</div>
+        <div class="reply-body">${r.body}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="reply-date">${fmtDateTime(r.created_at)}</div>
+          <button class="reply-btn" onclick="showReplyModal(${cid}, ${forumId}, ${threadId}, ${r.reply_id})">Reply</button>
+        </div>
+      </div>
+      ${(r.children || []).map(c => replyHTML(c, depth+1)).join('')}
+    </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="breadcrumb">
+      <button class="breadcrumb-link" onclick="renderCourseDetail('forums')">Forums</button>
+      <span class="breadcrumb-sep">›</span>
+      <button class="breadcrumb-link" onclick="openForum(${cid}, ${forumId}, '${(currentForum?.title||'Forum').replace(/'/g,'\\\'')}')">Forum</button>
+      <span class="breadcrumb-sep">›</span>
+      <span>${thread.title}</span>
+    </div>
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px">${thread.title}</div>
+      <div style="font-size:13px;color:var(--text3);margin-bottom:16px">by ${thread.author} · ${fmtDate(thread.created_at)}</div>
+      <div style="color:var(--text2);line-height:1.7;padding:16px;background:var(--surface2);border-radius:8px;margin-bottom:20px">${thread.body}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-weight:600;color:var(--text2)">💬 ${replies.length} Replies</div>
+        <button class="btn btn-primary btn-sm" onclick="showReplyModal(${cid}, ${forumId}, ${threadId}, null)">Reply to Thread</button>
+      </div>
+      ${replies.map(r => replyHTML(r)).join('') || '<div style="color:var(--text3);font-size:14px">No replies yet. Be the first!</div>'}
+    </div>
+  `;
+}
+
+async function loadCourseEvents(cid) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/courses/${cid}/events`);
+  const events = res.events || [];
+  const role = currentUser.role;
+
+  let html = '';
+  if (role !== 'student') {
+    html += `<div style="margin-bottom:20px"><button class="btn btn-primary btn-sm" onclick="showCreateEventModal(${cid})">+ New Event</button></div>`;
+  }
+
+  if (events.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No events</div></div>';
+  } else {
+    html += '<div class="card">';
+    events.forEach(ev => {
+      const d = new Date(ev.event_date);
+      const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+      const day = d.getDate();
+      html += `
+        <div class="event-item">
+          <div class="event-date-box">
+            <div class="event-month">${month}</div>
+            <div class="event-day">${day}</div>
+          </div>
+          <div>
+            <div class="event-info-title">${ev.title}</div>
+            <div class="event-info-meta">${ev.description || ''} ${ev.end_date ? '— ends '+fmtDateTime(ev.end_date) : ''}</div>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+async function loadCourseMembers(cid) {
+  const el = document.getElementById('course-tab-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/courses/${cid}/members`);
+  const students = res.students || [];
+  const lecturer = res.lecturer;
+
+  let html = `
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Students</div><div class="stat-value">${students.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Lecturer</div><div class="stat-value" style="font-size:18px">${lecturer ? [lecturer.first_name, lecturer.last_name].filter(Boolean).join(' ') : 'Unassigned'}</div></div>
+    </div>`;
+
+  if (lecturer) {
+    html += `<div class="card" style="margin-bottom:16px">
+      <div class="card-title">👤 Lecturer</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="user-avatar avatar-lecturer" style="width:40px;height:40px;font-size:16px">${initials(lecturer)}</div>
+        <div>
+          <div style="font-weight:500;color:var(--text)">${[lecturer.first_name, lecturer.last_name].filter(Boolean).join(' ')}</div>
+          <div style="font-size:13px;color:var(--text3)">${lecturer.email || ''}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (students.length > 0) {
+    html += `<div class="card">
+      <div class="card-title">🎓 Students (${students.length})</div>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Enrolled</th></tr></thead><tbody>
+      ${students.map(s => `<tr>
+        <td><div style="display:flex;align-items:center;gap:10px">
+          <div class="user-avatar avatar-student" style="width:28px;height:28px;font-size:11px;flex-shrink:0">${initials(s)}</div>
+          <span style="color:var(--text)">${[s.first_name, s.last_name].filter(Boolean).join(' ') || s.username}</span>
+        </div></td>
+        <td>${s.username}</td>
+        <td>${s.email || '—'}</td>
+        <td>${fmtDate(s.enrolled_at)}</td>
+      </tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// EVENTS PAGE
+// ═══════════════════════════════════════════
+async function renderEvents() {
+  const el = document.getElementById('page-events');
+  if (currentUser.role !== 'student') {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Calendar is for students</div><div class="empty-sub">View events from course pages.</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/events/student/${currentUser.user_id}`);
+  const events = res.events || [];
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayBtn = `<button class="btn btn-ghost btn-sm" onclick="filterStudentEvents('${today}', this)">Today</button>`;
+
+  let html = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">My Calendar</div>
+        <div class="page-subtitle">Events from your enrolled courses</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="date" id="events-date-filter" class="form-input" style="width:160px" onchange="filterStudentEvents(this.value)">
+        <button class="btn btn-ghost btn-sm" onclick="clearEventFilter()">All Events</button>
+      </div>
+    </div>`;
+
+  if (events.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No upcoming events</div></div>';
+  } else {
+    html += '<div class="card" id="events-list">' + renderEventsList(events) + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderEventsList(events) {
+  return events.map(ev => {
+    const d = new Date(ev.event_date);
+    return `<div class="event-item">
+      <div class="event-date-box">
+        <div class="event-month">${d.toLocaleString('en-US',{month:'short'}).toUpperCase()}</div>
+        <div class="event-day">${d.getDate()}</div>
+      </div>
+      <div>
+        <div class="event-info-title">${ev.title}</div>
+        <div class="event-info-meta">${ev.course_name} · ${ev.description||''}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">${fmtDateTime(ev.event_date)}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--text3);padding:20px;text-align:center">No events for this date.</div>';
+}
+
+async function filterStudentEvents(date) {
+  const res = await apiCall('GET', `/events/student/${currentUser.user_id}?date=${date}`);
+  const listEl = document.getElementById('events-list');
+  if (listEl) listEl.innerHTML = renderEventsList(res.events || []);
+}
+function clearEventFilter() {
+  document.getElementById('events-date-filter').value = '';
+  renderEvents();
+}
+
+// ═══════════════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════════════
+async function renderReports() {
+  const el = document.getElementById('page-reports');
+  el.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">📊 Reports</div>
+      <div class="page-subtitle">Analytics and insights</div>
+    </div>
+    <div class="tabs" id="report-tabs">
+      <button class="tab active" onclick="loadReport('large-courses', this)">Large Courses</button>
+      <button class="tab" onclick="loadReport('heavy-students', this)">Heavy Students</button>
+      <button class="tab" onclick="loadReport('busy-lecturers', this)">Busy Lecturers</button>
+      <button class="tab" onclick="loadReport('top-enrolled', this)">Top Enrolled</button>
+      <button class="tab" onclick="loadReport('top-students', this)">Top Students</button>
+    </div>
+    <div id="report-content"><div class="loading-center"><span class="spinner"></span></div></div>
+  `;
+  loadReport('large-courses');
+}
+
+async function loadReport(type, tabEl) {
+  document.querySelectorAll('#report-tabs .tab').forEach(t => t.classList.remove('active'));
+  if (tabEl) tabEl.classList.add('active');
+
+  const el = document.getElementById('report-content');
+  el.innerHTML = '<div class="loading-center"><span class="spinner"></span></div>';
+  const res = await apiCall('GET', `/reports/${type}`);
+
+  const configs = {
+    'large-courses': { data: res.courses, title: '📚 Courses with 50+ Students', cols: ['#','Course','Students'], row: (r,i) => `<tr><td class="rank-num ${i<3?'top3':''}">${i+1}</td><td style="color:var(--text)">${r.course_name}</td><td><span class="badge badge-blue">${r.student_count}</span></td></tr>` },
+    'heavy-students': { data: res.students, title: '🎒 Students Enrolled in 5+ Courses', cols: ['#','Username','Courses'], row: (r,i) => `<tr><td class="rank-num ${i<3?'top3':''}">${i+1}</td><td style="color:var(--text)">${r.username}</td><td><span class="badge badge-green">${r.course_count}</span></td></tr>` },
+    'busy-lecturers': { data: res.lecturers, title: '🎓 Lecturers Teaching 3+ Courses', cols: ['#','Username','Courses'], row: (r,i) => `<tr><td class="rank-num ${i<3?'top3':''}">${i+1}</td><td style="color:var(--text)">${r.username}</td><td><span class="badge badge-purple">${r.course_count}</span></td></tr>` },
+    'top-enrolled': { data: res.courses, title: '🔥 Top 10 Most Enrolled Courses', cols: ['#','Course','Enrollments'], row: (r,i) => `<tr><td class="rank-num ${i<3?'top3':''}">${i+1}</td><td style="color:var(--text)">${r.course_name}</td><td><span class="badge badge-yellow">${r.enrollments}</span></td></tr>` },
+    'top-students': { data: res.students, title: '⭐ Top 10 Students by Average', cols: ['#','Username','Avg Grade'], row: (r,i) => `<tr><td class="rank-num ${i<3?'top3':''}">${i+1}</td><td style="color:var(--text)">${r.username}</td><td><span class="badge badge-green">${parseFloat(r.avg_grade||0).toFixed(1)}</span></td></tr>` },
+  };
+
+  const cfg = configs[type];
+  if (!cfg) { el.innerHTML = '<div class="empty">Unknown report.</div>'; return; }
+  const data = cfg.data || [];
+
+  if (data.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No data available</div></div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">${cfg.title} <span class="badge badge-blue" style="margin-left:8px">${data.length}</span></div>
+      <div class="table-wrap"><table>
+        <thead><tr>${cfg.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+        <tbody>${data.map((r,i) => cfg.row(r,i)).join('')}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// MODALS — Actions
+// ═══════════════════════════════════════════
+function showCreateCourseModal() {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Create Course</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Course Code *</label><input class="form-input" id="m-code" placeholder="e.g. COMP3161"></div>
+    <div class="form-group"><label class="form-label">Course Name *</label><input class="form-input" id="m-name" placeholder="Course name"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="m-desc" rows="3" placeholder="Brief description"></textarea></div>
+    <div class="form-group"><label class="form-label">Lecturer ID (optional)</label><input class="form-input" id="m-lid" type="number" placeholder="Lecturer user ID"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCreateCourse()">Create</button>
+    </div>
+  </div>`);
+}
+
+async function submitCreateCourse() {
+  const body = {
+    course_code: document.getElementById('m-code').value.trim(),
+    course_name: document.getElementById('m-name').value.trim(),
+    description: document.getElementById('m-desc').value.trim(),
+    lecturer_id: document.getElementById('m-lid').value ? parseInt(document.getElementById('m-lid').value) : undefined,
+  };
+  if (!body.course_code || !body.course_name) return toast('Code and name required.', 'error');
+  const res = await apiCall('POST', '/courses', body);
+  if (res.course_id) { toast('Course created!', 'success'); closeModal(); renderCourses(); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showAssignLecturerModal(cid) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Assign Lecturer</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Lecturer ID</label><input class="form-input" id="m-alid" type="number" placeholder="Lecturer user ID"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAssignLecturer(${cid})">Assign</button>
+    </div>
+  </div>`);
+}
+
+async function submitAssignLecturer(cid) {
+  const lid = parseInt(document.getElementById('m-alid').value);
+  if (!lid) return toast('Enter lecturer ID.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/enroll`, { lecturer_id: lid });
+  if (res.message) { toast('Lecturer assigned!', 'success'); closeModal(); openCourse(cid); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+async function enrollCourse(cid) {
+  const res = await apiCall('POST', `/courses/${cid}/enroll`, {});
+  if (res.message) { toast('Enrolled successfully!', 'success'); renderDashboard(); }
+  else toast(res.error || 'Enrollment failed.', 'error');
+}
+
+function showAddSectionModal(cid) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Section</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Section Title *</label><input class="form-input" id="m-stitle" placeholder="e.g. Week 1 — Introduction"></div>
+    <div class="form-group"><label class="form-label">Sort Order</label><input class="form-input" id="m-sorder" type="number" value="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddSection(${cid})">Create</button>
+    </div>
+  </div>`);
+}
+
+async function submitAddSection(cid) {
+  const title = document.getElementById('m-stitle').value.trim();
+  const sort_order = parseInt(document.getElementById('m-sorder').value) || 0;
+  if (!title) return toast('Title required.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/content/sections`, { title, sort_order });
+  if (res.section_id) { toast('Section added!', 'success'); closeModal(); loadCourseContent(cid); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showAddContentModal(cid, sectionId) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Content Item</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Type *</label>
+      <select class="form-select" id="m-ctype">
+        <option value="link">Link</option>
+        <option value="file">File</option>
+        <option value="slide">Slide</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="m-ctitle" placeholder="Content title"></div>
+    <div class="form-group"><label class="form-label">URL *</label><input class="form-input" id="m-curl" placeholder="https://..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddContent(${cid}, ${sectionId})">Add</button>
+    </div>
+  </div>`);
+}
+
+async function submitAddContent(cid, sectionId) {
+  const body = {
+    content_type: document.getElementById('m-ctype').value,
+    title: document.getElementById('m-ctitle').value.trim(),
+    content_url: document.getElementById('m-curl').value.trim(),
+  };
+  if (!body.title || !body.content_url) return toast('Title and URL required.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/content/sections/${sectionId}/items`, body);
+  if (res.content_id) { toast('Content added!', 'success'); closeModal(); loadCourseContent(cid); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showCreateAssignmentModal(cid) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">New Assignment</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="m-atitle" placeholder="Assignment title"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="m-adesc" rows="3"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Due Date</label><input class="form-input" id="m-adue" type="datetime-local"></div>
+      <div class="form-group"><label class="form-label">Max Grade</label><input class="form-input" id="m-amax" type="number" value="100"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCreateAssignment(${cid})">Create</button>
+    </div>
+  </div>`);
+}
+
+async function submitCreateAssignment(cid) {
+  const body = {
+    title: document.getElementById('m-atitle').value.trim(),
+    description: document.getElementById('m-adesc').value.trim(),
+    due_date: document.getElementById('m-adue').value || undefined,
+    max_grade: parseFloat(document.getElementById('m-amax').value) || 100,
+  };
+  if (!body.title) return toast('Title required.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/assignments`, body);
+  if (res.assignment_id) { toast('Assignment created!', 'success'); closeModal(); loadCourseAssignments(cid); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showSubmitModal(assignmentId) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Submit Assignment</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Submission URL</label><input class="form-input" id="m-suburl" placeholder="https://github.com/..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAssignment(${assignmentId})">Submit</button>
+    </div>
+  </div>`);
+}
+
+async function submitAssignment(aId) {
+  const url = document.getElementById('m-suburl').value.trim();
+  const res = await apiCall('POST', `/courses/${currentCourse.course_id}/assignments/${aId}/submit`, { submission_url: url });
+  if (res.message) { toast('Submitted!', 'success'); closeModal(); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+async function showSubmissionsModal(cid, aId, title) {
+  showModal(`<div class="modal modal-wide">
+    <div class="modal-header"><div class="modal-title">Submissions — ${title}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="subs-content"><div class="loading-center"><span class="spinner"></span></div></div>
+  </div>`);
+
+  const res = await apiCall('GET', `/courses/${cid}/assignments/${aId}/submissions`);
+  const subs = res.submissions || [];
+  const el = document.getElementById('subs-content');
+
+  if (subs.length === 0) { el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No submissions yet</div></div>'; return; }
+
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Student</th><th>Submitted</th><th>Link</th><th>Grade</th><th>Action</th></tr></thead>
+    <tbody>${subs.map(s => `<tr>
+      <td style="color:var(--text)">${[s.first_name,s.last_name].filter(Boolean).join(' ')||s.username}</td>
+      <td>${fmtDate(s.submitted_at)}</td>
+      <td>${s.submission_url ? `<a href="${s.submission_url}" target="_blank" style="color:var(--accent);font-size:12px">View →</a>` : '—'}</td>
+      <td>${s.grade !== null ? `<span class="badge badge-green">${s.grade}</span>` : '<span class="badge badge-yellow">Ungraded</span>'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="showGradeModal(${cid}, ${aId}, ${s.student_id})">Grade</button></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function showGradeModal(cid, aId, studentId) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Submit Grade</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Grade</label><input class="form-input" id="m-grade" type="number" min="0" max="100" placeholder="0–100"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitGrade(${cid}, ${aId}, ${studentId})">Submit</button>
+    </div>
+  </div>`);
+}
+
+async function submitGrade(cid, aId, studentId) {
+  const grade = parseFloat(document.getElementById('m-grade').value);
+  if (isNaN(grade) || grade < 0) return toast('Invalid grade.', 'error');
+  const res = await apiCall('PATCH', `/courses/${cid}/assignments/${aId}/submissions/${studentId}/grade`, { grade });
+  if (res.message) { toast('Grade submitted!', 'success'); closeModal(); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showCreateForumModal(cid) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">Create Forum</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="m-ftitle" placeholder="Forum title"></div>
+    <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="m-fdesc" placeholder="Optional description"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCreateForum(${cid})">Create</button>
+    </div>
+  </div>`);
+}
+
+async function submitCreateForum(cid) {
+  const body = { title: document.getElementById('m-ftitle').value.trim(), description: document.getElementById('m-fdesc').value.trim() };
+  if (!body.title) return toast('Title required.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/forums`, body);
+  if (res.forum_id) { toast('Forum created!', 'success'); closeModal(); loadCourseForums(cid); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showNewThreadModal(cid, forumId) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">New Thread</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="m-thtitle" placeholder="Thread title"></div>
+    <div class="form-group"><label class="form-label">Post *</label><textarea class="form-input" id="m-thbody" rows="5" placeholder="Start the discussion..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitThread(${cid}, ${forumId})">Post Thread</button>
+    </div>
+  </div>`);
+}
+
+async function submitThread(cid, forumId) {
+  const body = { title: document.getElementById('m-thtitle').value.trim(), body: document.getElementById('m-thbody').value.trim() };
+  if (!body.title || !body.body) return toast('Title and body required.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/forums/${forumId}/threads`, body);
+  if (res.thread_id) { toast('Thread posted!', 'success'); closeModal(); openForum(cid, forumId, currentForum?.title || 'Forum'); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showReplyModal(cid, forumId, threadId, parentReplyId) {
+  const label = parentReplyId ? 'Reply to Reply' : 'Reply to Thread';
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">${label}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Your Reply *</label><textarea class="form-input" id="m-replytext" rows="4" placeholder="Write your reply..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitReply(${cid}, ${forumId}, ${threadId}, ${parentReplyId || null})">Post Reply</button>
+    </div>
+  </div>`);
+}
+
+async function submitReply(cid, forumId, threadId, parentReplyId) {
+  const body = document.getElementById('m-replytext').value.trim();
+  if (!body) return toast('Reply cannot be empty.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/forums/${forumId}/threads/${threadId}/replies`, { body, parent_reply_id: parentReplyId });
+  if (res.reply_id) { toast('Reply posted!', 'success'); closeModal(); openThread(cid, forumId, threadId); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+function showCreateEventModal(cid) {
+  showModal(`<div class="modal">
+    <div class="modal-header"><div class="modal-title">New Calendar Event</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="m-evtitle" placeholder="Event title"></div>
+    <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="m-evdesc"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Date *</label><input class="form-input" id="m-evstart" type="datetime-local"></div>
+      <div class="form-group"><label class="form-label">End Date</label><input class="form-input" id="m-evend" type="datetime-local"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCreateEvent(${cid})">Create</button>
+    </div>
+  </div>`);
+}
+
+async function submitCreateEvent(cid) {
+  const body = {
+    title: document.getElementById('m-evtitle').value.trim(),
+    description: document.getElementById('m-evdesc').value.trim(),
+    event_date: document.getElementById('m-evstart').value,
+    end_date: document.getElementById('m-evend').value || undefined,
+  };
+  if (!body.title || !body.event_date) return toast('Title and start date required.', 'error');
+  const res = await apiCall('POST', `/courses/${cid}/events`, body);
+  if (res.event_id) { toast('Event created!', 'success'); closeModal(); loadCourseEvents(cid); }
+  else toast(res.error || 'Failed.', 'error');
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD SHORTCUT
+// ═══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('form-login').style.display !== 'none' && document.activeElement?.closest('#auth-screen')) handleLogin();
+});
+</script>
 </body>
 </html>

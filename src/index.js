@@ -20,19 +20,19 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth',    authRoutes);
 app.use('/api/courses', courseRoutes);
 
-app.use('/api/courses', eventRoutes); 
+app.use('/api/courses', eventRoutes);
+app.use('/api/events',  eventRoutes);
 
 app.use('/api/courses/:course_id/forums', forumRoutes);
+
 app.use('/api/courses/:course_id/content', contentRoutes);
+
 app.use('/api/courses/:course_id/assignments', assignmentRoutes);
 
 app.use('/api/reports', reportRoutes);
-
-console.log('eventRoutes =', eventRoutes);
-console.log('type =', typeof eventRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found.` });
@@ -48,17 +48,5 @@ app.listen(PORT, () => {
   console.log(`\n  Course Management API running on port ${PORT}`);
   console.log(`  Health: http://localhost:${PORT}/api/health\n`);
 });
-
-app.use(express.json({
-  limit: '10mb'
-}));
-
-console.log('authRoutes', authRoutes);
-console.log('courseRoutes', courseRoutes);
-console.log('eventRoutes', eventRoutes);
-console.log('forumRoutes', forumRoutes);
-console.log('contentRoutes', contentRoutes);
-console.log('assignmentRoutes', assignmentRoutes);
-console.log('reportRoutes', reportRoutes);
 
 module.exports = app;

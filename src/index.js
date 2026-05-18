@@ -31,6 +31,8 @@ app.use('/api/courses/:course_id/assignments', assignmentRoutes);
 
 app.use('/api/reports', reportRoutes);
 
+console.log('eventRoutes =', eventRoutes);
+console.log('type =', typeof eventRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found.` });

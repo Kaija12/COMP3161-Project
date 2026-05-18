@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <h2>CourseSys</h2>
+  <div>
+    <a href="courses.html">Courses</a>
+    <a href="events.html">Events</a>
+    <a href="forums.html">Forums</a>
+    <a href="assignments.html">Assignments</a>
+    <a href="reports.html">Reports</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Dashboard</h1>
+
+  <div class="grid">
+    <div class="card" onclick="go('courses.html')">Manage Courses</div>
+    <div class="card" onclick="go('events.html')">Calendar Events</div>
+    <div class="card" onclick="go('forums.html')">Forums</div>
+    <div class="card" onclick="go('assignments.html')">Assignments</div>
+    <div class="card" onclick="go('reports.html')">Reports</div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

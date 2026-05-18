@@ -1,0 +1,676 @@
+{
+  "info": {
+    "name": "Course Management API",
+    "description": "COMP3161 Final Project — Complete REST API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "course_id",
+      "value": "1"
+    },
+    {
+      "key": "forum_id",
+      "value": "1"
+    },
+    {
+      "key": "thread_id",
+      "value": "1"
+    },
+    {
+      "key": "assignment_id",
+      "value": "1"
+    },
+    {
+      "key": "student_id",
+      "value": "206"
+    },
+    {
+      "key": "lecturer_id",
+      "value": "6"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser1\",\n  \"password\": \"password123\",\n  \"role\": \"student\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"email\": \"jane@school.edu\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) { pm.collectionVariables.set('token', res.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin1\",\n  \"password\": \"your_admin_password\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses"
+          }
+        },
+        {
+          "name": "Get Single Course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}"
+          }
+        },
+        {
+          "name": "Create Course (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_code\": \"COMP9999\",\n  \"course_name\": \"Advanced Topics in CS\",\n  \"description\": \"Deep dive into advanced computer science topics.\",\n  \"lecturer_id\": 6\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Courses for Student",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/student/{{student_id}}"
+          }
+        },
+        {
+          "name": "Get Courses by Lecturer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/lecturer/{{lecturer_id}}"
+          }
+        },
+        {
+          "name": "Enroll in Course (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/enroll",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Assign Lecturer to Course (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/enroll",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lecturer_id\": {{lecturer_id}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Course Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/members"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calendar Events",
+      "item": [
+        {
+          "name": "Get Events for Course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/events"
+          }
+        },
+        {
+          "name": "Create Calendar Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/events",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Midterm Exam\",\n  \"description\": \"Chapters 1-5\",\n  \"event_date\": \"2025-03-15 09:00:00\",\n  \"end_date\":   \"2025-03-15 11:00:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Events for Student (by date)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/events/student/{{student_id}}?date=2024-06-15",
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-06-15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Events for Student (all dates)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/events/student/{{student_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forums & Threads",
+      "item": [
+        {
+          "name": "Get Forums for Course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums"
+          }
+        },
+        {
+          "name": "Create Forum",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"General Discussion\",\n  \"description\": \"Talk about anything course-related.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Threads in Forum",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums/{{forum_id}}/threads"
+          }
+        },
+        {
+          "name": "Create Thread",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums/{{forum_id}}/threads",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Help with Assignment 2\",\n  \"body\":  \"Can someone explain question 3?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Thread with Replies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums/{{forum_id}}/threads/{{thread_id}}"
+          }
+        },
+        {
+          "name": "Reply to Thread",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums/{{forum_id}}/threads/{{thread_id}}/replies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Question 3 asks you to implement a binary search.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reply to a Reply (nested)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/forums/{{forum_id}}/threads/{{thread_id}}/replies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Thanks, that really helped!\",\n  \"parent_reply_id\": 1\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Course Content",
+      "item": [
+        {
+          "name": "Get All Content for Course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/content"
+          }
+        },
+        {
+          "name": "Create Section",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/content/sections",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Week 1 — Introduction\",\n  \"sort_order\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Content Item to Section",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/content/sections/1/items",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content_type\": \"slide\",\n  \"title\": \"Lecture 1 Slides\",\n  \"content_url\": \"https://school.edu/slides/lec1.pptx\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignments & Grades",
+      "item": [
+        {
+          "name": "Get Assignments for Course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/assignments"
+          }
+        },
+        {
+          "name": "Create Assignment (Lecturer/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/assignments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Assignment 1\",\n  \"description\": \"Implement a linked list.\",\n  \"due_date\": \"2025-04-01 23:59:00\",\n  \"max_grade\": 100\n}"
+            }
+          }
+        },
+        {
+          "name": "Submit Assignment (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/assignments/{{assignment_id}}/submit",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"submission_url\": \"https://school.edu/submissions/asgn1/studentX.pdf\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Submissions for Assignment (Lecturer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/assignments/{{assignment_id}}/submissions"
+          }
+        },
+        {
+          "name": "Grade a Submission (Lecturer/Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/assignments/{{assignment_id}}/submissions/{{student_id}}/grade",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grade\": 87.5\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Student Grades in Course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/courses/{{course_id}}/grades/{{student_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Large Courses (50+ students)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/reports/large-courses"
+          }
+        },
+        {
+          "name": "Heavy Students (5+ courses)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/reports/heavy-students"
+          }
+        },
+        {
+          "name": "Busy Lecturers (3+ courses)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/reports/busy-lecturers"
+          }
+        },
+        {
+          "name": "Top 10 Enrolled Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/reports/top-enrolled"
+          }
+        },
+        {
+          "name": "Top 10 Students by Average Grade",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/reports/top-students"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "API Health",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    }
+  ]
+}
